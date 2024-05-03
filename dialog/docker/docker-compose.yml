@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+  postgres-otus-db:
+    hostname: postgres-otus-db
+    image: bitnami/postgresql:14
+    shm_size: 1g
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - ./01-schema-init.sql:/docker-entrypoint-initdb.d/01-schema-init.sql
+      - ./02-data-init.sql:/docker-entrypoint-initdb.d/02-data-init.sql
+
+  redis-otus:
+    image: redis:7
+    hostname: redis-otus
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/data
